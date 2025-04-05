@@ -40,6 +40,7 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
     for node in old_nodes:
         if node.text_type is not TextType.TEXT:
             new_nodes.append(node)
+            continue
         if len(node.text) == 0:
             continue
         elif len(extract_markdown_images(node.text)) == 0:
@@ -60,6 +61,7 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
     for node in old_nodes:
         if node.text_type is not TextType.TEXT:
             new_nodes.append(node)
+            continue
         if len(node.text) == 0:
             continue
         elif len(extract_markdown_links(node.text)) == 0:
@@ -75,10 +77,16 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
                 new_nodes.extend(split_nodes_link([TextNode(node.text[node.text.find(f"({match[1]})")+len(f"({match[1]})"):], TextType.TEXT)]))
     return new_nodes
 
-
+def text_to_textnodes(text: str) -> list[TextNode]:
+    bold = split_nodes_delimiter([TextNode(text, TextType.TEXT)], "**", TextType.BOLD)
+    italic = split_nodes_delimiter(bold, "_", TextType.ITALIC)
+    code = split_nodes_delimiter(italic, "`", TextType.CODE)
+    image = split_nodes_image(code)
+    link = split_nodes_link(image)
+    return link
 
 def extract_markdown_images(text) -> list[tuple]:
     return re.findall(r"!\[([\w\d\s]+)]\(([0-9a-zA-Z$\-_.+!*',;/?:@=&]+)\)", text)
 
 def extract_markdown_links(text) -> list[tuple]:
-    return re.findall(r"\[([\w\d\s]+)]\(([0-9a-zA-Z$\-_.+!*',;/?:@=&]+)\)", text)
+    return re.findall(r"(?<!!)\[([\w\d\s]+)]\(([0-9a-zA-Z$\-_.+!*',;/?:@=&]+)\)", text)

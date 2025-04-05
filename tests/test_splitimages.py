@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from utils import split_nodes_image, split_nodes_link, split_nodes_image_dev
+from inline_utils import split_nodes_image, split_nodes_link
 
 
 class TestSplitImages(unittest.TestCase):

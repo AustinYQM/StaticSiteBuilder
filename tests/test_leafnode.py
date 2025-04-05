@@ -2,7 +2,7 @@ import unittest
 
 from htmlnode import LeafNode
 from textnode import TextNode, TextType
-from utils import text_node_to_html_node
+from inline_utils import text_node_to_html_node
 
 
 class TestLeafNode(unittest.TestCase):
