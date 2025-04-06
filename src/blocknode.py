@@ -1,5 +1,6 @@
 import re
 from enum import Enum
+from functools import reduce
 
 
 class BlockType(Enum):
@@ -11,19 +12,23 @@ class BlockType(Enum):
     ORDERED_LIST = "ordered-list"
 
 def block_to_block_type(block: str) -> BlockType | None:
-    match_code = re.compile(r"([ ]{0,3}`{3,}[\w\d\s\n]+`{3,})", re.MULTILINE)
     match_heading = re.compile(r"(#{1,6}\s)")
-    match_quote = re.compile(r"^>[\w\d\s]+\n?", re.MULTILINE)
-    match_unordered_list = re.compile(r"^- [\w\d\s]+\n?", re.MULTILINE)
-    # match_ordered_list = re.compile(r"^\d\. [\w\d\s]+\n?", re.MULTILINE)
-    if match_heading.match(block):
-        return BlockType.HEADING
-    elif match_code.match(block):
+    lines = block.split("\n")
+    oneline = "".join(lines)
+    iscode = oneline.startswith("```") and oneline.endswith("```")
+    if iscode:
         return BlockType.CODE
-    elif match_quote.match(block):
+    if match_heading.match(lines[0]):
+        return BlockType.HEADING
+    isquote = reduce(lambda x, y: x and y.startswith(">"), lines, True)
+    if isquote:
         return BlockType.QUOTE
-    elif match_unordered_list.match(block):
+    isunordered_list = reduce(lambda x, y: x and y.startswith("- "), lines, True)
+    if isunordered_list:
         return BlockType.UNORDERED_LIST
-
-
-    return None
+    isordered_list = True
+    for i, line in enumerate(lines, start=1):
+        isordered_list = isordered_list and line.startswith(f"{i}. ")
+    if isordered_list:
+        return BlockType.ORDERED_LIST
+    return BlockType.PARAGRAPH
