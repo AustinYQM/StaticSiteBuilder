@@ -26,7 +26,7 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
                 kids = build_children(block[match.end():])
                 children.append(parent_or_leaf(f"h{len(match.group())-1}", kids, block))
             case BlockType.QUOTE:
-                stripped_quote = remove_starting_characters(">", block)
+                stripped_quote = remove_starting_characters("> ", block)
                 stripped_quote = stripped_quote.replace("\n", " ")
                 kids = build_children(stripped_quote)
                 children.append(parent_or_leaf("blockquote", kids, block))

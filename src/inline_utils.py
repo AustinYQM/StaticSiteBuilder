@@ -86,7 +86,7 @@ def text_to_textnodes(text: str) -> list[TextNode]:
     return link
 
 def extract_markdown_images(text) -> list[tuple]:
-    return re.findall(r"!\[([\w\d\s]+)]\(([0-9a-zA-Z$\-_.+!*',;/?:@=&]+)\)", text)
+    return re.findall(r"!\[([^[]+)]\(([0-9a-zA-Z$\-_.+!*',;/?:@=&]+)\)", text)
 
 def extract_markdown_links(text) -> list[tuple]:
-    return re.findall(r"(?<!!)\[([\w\d\s]+)]\(([0-9a-zA-Z$\-_.+!*',;/?:@=&]+)\)", text)
+    return re.findall(r"(?<!!)\[([^[]+)]\(([0-9a-zA-Z$\-_.+!*',;/?:@=&\"]+)\)", text)
